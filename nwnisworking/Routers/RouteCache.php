@@ -23,9 +23,11 @@ final class RouteCache implements Bootable{
 
     if(self::isCacheValid($cache, $controllers)){
       Logger::log('Route cache loaded');
-      $data = require_once $cache;
+      $routes = require_once $cache;
 
       self::$booted = true;
+
+      $app->setRoutes($routes);
       return;
     }
     else{
@@ -33,6 +35,8 @@ final class RouteCache implements Bootable{
     }
 
     $routes = self::buildCache($controllers);
+
+    $app->setRoutes($routes);
 
     Logger::log('Route cache built with ' . count($routes) . ' routes');
     file_put_contents($cache, '<?php return ' . var_export($routes, true) . ';');
@@ -82,14 +86,13 @@ final class RouteCache implements Bootable{
         foreach($methodAttributes as $methodAttribute){
           $childRoute = $methodAttribute->newInstance();
           $combineRoute = $classRoute ? $classRoute->combine($childRoute) : $childRoute;
+          $fullPath = '/' . trim($combineRoute->path, '/');
+          $middlewares = $combineRoute->middlewares;
 
           foreach($combineRoute->methods as $httpMethod){
             $httpMethod = strtoupper($httpMethod);
 
             Logger::log("Generating route: $httpMethod $combineRoute->path with middlewares: " . implode(', ', $combineRoute->middlewares));
-
-             $fullPath = '/' . trim($combineRoute->path, '/');
-             $middlewares = $combineRoute->middlewares;
 
             $routes["$httpMethod $fullPath"] = [
               'controller' => $controller,
