@@ -10,7 +10,7 @@ final class AppController{
 
   #[Route('', ['GET'], middlewares : ['auth'])]
   public function index() : string{
-    return $this->view->render('index', ['title' => 'Home Page']);
+    return $this->view->render('index', ['title' => 'Muse - Peer to Peer Audio Sharing']);
   }
 
   #[Route('/signin', ['GET', 'POST'])]
