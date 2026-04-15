@@ -17,6 +17,8 @@ final class App{
 
   private array $singletons = [];
 
+  private array $middlewares = [];
+
   public function run() : void{
     foreach($this->bootables as $bootable){
       $bootable::boot($this);
@@ -90,6 +92,10 @@ final class App{
     return $reflection->newInstanceArgs($dependencies);
   }
 
+  public function registerMiddleware(string $key, string $class): void {
+    $this->middlewares[$key] = $class;
+  }
+
   private function dispatch() : void{
     $method = $_SERVER['REQUEST_METHOD'];
     $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
@@ -106,9 +112,29 @@ final class App{
     $route = $this->routes[$key];
     $controller = $this->make($route['controller']);
     $method = $route['method'];
-    $response = call_user_func([$controller, $method]);
+    $middlewares = $route['middlewares'] ?? [];
 
-    echo $response;
+    $pipeline = array_reduce(
+      array_reverse($middlewares),
+      function($next, $middlewareKey){
+        return function($request) use($next, $middlewareKey){
+          $middlewareClass = $this->middlewares[$middlewareKey] ?? null;
+          if(!$middlewareClass){
+            Logger::log("Middleware $middlewareKey not found", Logger::ERROR);
+            return $next($request);
+          }
+
+          $middleware = $this->make($middlewareClass);
+          return $middleware->handle($request, $next);
+        };
+      },
+      function($request) use($controller, $method){
+        return call_user_func([$controller, $method]);
+      });
+
+      $response = $pipeline([]);
+
+      echo $response;
   }
 
   public static function getInstance() : self{
