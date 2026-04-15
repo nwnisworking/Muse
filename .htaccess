@@ -1,0 +1,14 @@
+RewriteEngine On
+
+# File exists in public folder and it contains an extension
+RewriteCond %{REQUEST_URI} \.\w+$
+RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -f
+RewriteRule ^(.*)$ public/$1 [END]
+
+# File does not exists in public folder but contains an extension
+RewriteCond %{REQUEST_URI} \.\w+$
+RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} !-f
+RewriteRule ^ 404.php [END]
+
+# Redirect all requests to index.php
+RewriteRule ^ index.php [END]
