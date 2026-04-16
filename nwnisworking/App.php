@@ -1,6 +1,8 @@
 <?php
 namespace nwnisworking;
 
+use nwnisworking\HTTP\Request;
+use nwnisworking\Utils\Logger;
 use ReflectionClass;
 use function call_user_func;
 use function is_string;
@@ -50,17 +52,13 @@ final class App{
     $this->bindings[$key] = $factory;
   }
 
-  public function singleton(string $key, callable | string $factory) : void{
-    if(is_string($factory) && class_exists($factory)){
-      $factory = fn($app) => new $factory;
-    }
-
+  public function singleton(string $key, callable $factory) : void{
     $this->bindings[$key] = function($app) use($key, $factory){
-      if(!isset($this->singletons[$key])){
-        $this->singletons[$key] = $factory($app);
+      if(!isset($app->singletons[$key])){
+        $app->singletons[$key] = $factory($app);
       }
 
-      return $this->singletons[$key];
+      return $app->singletons[$key];
     };
   }
 
@@ -97,15 +95,14 @@ final class App{
   }
 
   private function dispatch() : void{
-    $method = $_SERVER['REQUEST_METHOD'];
-    $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
-    $uri = $uri ?: '/';
-
-    $key = "$method $uri";
-
+    $request = new Request();
+    $key = "{$request->method} {$request->uri}";
+    
     if(!isset($this->routes[$key])){
       http_response_code(404);
-      echo '404 Not Found';
+      
+      $view = $this->make('view');
+      echo $view->render('404');
       return;
     }
 
@@ -129,10 +126,10 @@ final class App{
         };
       },
       function($request) use($controller, $method){
-        return call_user_func([$controller, $method]);
+        return call_user_func([$controller, $method], $request);
       });
 
-      $response = $pipeline([]);
+      $response = $pipeline($request);
 
       echo $response;
   }
