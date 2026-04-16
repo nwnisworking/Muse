@@ -1,6 +1,8 @@
 <?php
 namespace nwnisworking\Middlewares;
 
+use nwnisworking\HTTP\Request;
+
 interface Middleware{
-  public function handle(array $request, callable $next) : array;
+  public function handle(Request $request, callable $next) : string;
 }
