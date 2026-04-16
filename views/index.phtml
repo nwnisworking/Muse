@@ -8,7 +8,7 @@
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap" rel="stylesheet" />
 		<link rel="stylesheet" href="css/style.css" />
-		<title><?= $title ?? '' ?></title>
+		<title><?= $title ?></title>
 	</head>
 	<body>
 		<nav>
@@ -16,19 +16,17 @@
 				<img src="assets/logo.svg" alt="Muse logo" />
 				<span>Muse</span>
 			</a>
-			<button>Sign In</button>
+			<?php if($auth): ?>
+			<div>
+				<a href="dashboard">Dashboard</a>
+				<a href="songs">Songs</a>
+			</div>
+			<?php else: ?>
+			<div>
+				<a href="sign-in">Sign In</a>
+			</div>
+			<?php endif; ?>
 		</nav>
-		<header>
-			<section class="hero">
-				<aside>
-					<h1>Share tracks, discover music, and connect through peer-to-peer listening.</h1>
-					<p>Muse lets listeners exchange audio directly with each other through private circles and open communities, making peer-to-peer sharing simple, fast, and accessible on any device.</p>
-					<form action="#" method="post">
-						<input id="email" name="email" type="email" placeholder="Enter your email" autocomplete="email" />
-						<button type="submit">Sign Up Now</button>
-					</form>
-				</aside>
-			</section>
-		</header>
+		<?= $content ?>
 	</body>
 </html>
