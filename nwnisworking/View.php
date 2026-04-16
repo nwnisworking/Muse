@@ -2,9 +2,9 @@
 namespace nwnisworking;
 
 final class View{
-  public function render(string $path, array $data = []) : string{
-    extract($data);
-    unset($data);
+  public function render(string $path, array $_ = []) : string{
+    extract($_, EXTR_SKIP);
+    unset($_);
 
     ob_start();
     include "views/$path.phtml";
