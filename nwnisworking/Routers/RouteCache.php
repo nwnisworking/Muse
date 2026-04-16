@@ -5,7 +5,7 @@ use function count;
 
 use nwnisworking\App;
 use nwnisworking\Bootable;
-use nwnisworking\Logger;
+use nwnisworking\Utils\Logger;
 use ReflectionClass;
 
 final class RouteCache implements Bootable{
