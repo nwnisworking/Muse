@@ -1,0 +1,43 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"editor.tabSize": 2,
+		"php.executablePath": "C:/php/8.5.2/",
+		"openssl" : {
+			"path" : "C:/openssl/3.6.0/",
+			"config" : "C:/openssl/openssl.cnf",
+			"type" : "ec"
+		},
+		"php" : {
+			"path" : "C:/php/8.5.2/"
+		},
+		"terminal.integrated.env.windows": {
+			"OPENSSL_CONF" : "${config:openssl.config}",
+			"PATH" : "${env:PATH};${config:php.path};${config:openssl.path}"
+		}
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "Run Muse",
+				"type": "shell",
+				"command": "php -S localhost:8000",
+				"group": {
+					"kind": "build",
+					"isDefault": true
+				},
+				"presentation": {
+					"echo": true,
+					"reveal": "always",
+					"focus": false,
+					"panel": "shared"
+				}
+			}
+		]
+	}
+}
