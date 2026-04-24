@@ -2,6 +2,7 @@
 namespace nwnisworking\Controllers;
 
 use nwnisworking\HTTP\Request;
+use nwnisworking\HTTP\Response;
 use nwnisworking\HTTP\Session;
 use nwnisworking\View;
 use nwnisworking\Routers\Route;
@@ -22,18 +23,41 @@ final class AppController{
   }
 
   #[Route('/sign-in', ['GET', 'POST'], ['auth'])]
-  public function signin() : string{
-    $user = $this->session->get('user');
-    var_dump($this->session);
-    // return $this->view->render('index', [
-    //   'title' => 'Muse | Sign In',
-    //   'auth' => $user,
-    //   'content' => $this->view->render()
-    // ]);
+  public function signin(Request $request, Response $response) : string{
+    if($request->method === 'GET'){
+      return $this->view->render('index', [
+        'title' => 'Muse | Sign In',
+        'auth' => null,
+        'content' => $this->view->render('sign-in')
+      ]);
+    }
 
-    return '4';
+    $email = filter_var($request->body['email'], FILTER_VALIDATE_EMAIL);
+    $password = $request->body['password'];
+
+    if($email === '' || $password === '' || $email === false){
+      return $this->view->render('index', [
+        'title' => 'Muse | Sign In',
+        'content' => $this->view->render('sign-in', [
+          'error' => 'Enter your email and password to continue.',
+          'email' => $email,
+          'auth' => null
+        ])
+      ]);
+    }
+
+    $this->session->set('user', [
+      'email' => $email,
+    ]);
+
+    $this->session->regenerate();
+    $response->set('location', '/');
+
+    return '';
   }
 
-  #[Route('/signup')]
-  public function signup() : string{}
+  #[Route('/signup', ['POST'], ['auth'])]
+  public function signup() : string{
+    return '';
+  }
 }
