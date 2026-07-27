@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Muse</title>
+  <link rel="preload" href="css/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <script type="module" src="js/main.js" defer></script>
+</head>
+<body>
+  <div class="glow" aria-hidden="true"></div>
+  <main class="app">
+  </main>
+  <!-- This is a template for the loading screen -->
+  <template id="loading-template">
+    <div id="loading-screen" class="container loading-screen panel" role="status" aria-live="polite" aria-busy="true">
+      <div class="spinner" aria-hidden="true"></div> 
+      <h2></h2>
+      <p></p>
+    </div>
+  </template>
+</body>
+</html>
